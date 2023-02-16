@@ -20,7 +20,7 @@ class Reviewcart extends StatelessWidget {
           '\$ 170.00',
           style: TextStyle(color: Colors.green.shade900),
         ),
-        trailing: Container(
+        trailing: SizedBox(
           width: 160,
           child: MaterialButton(
             color: Colors.orange,

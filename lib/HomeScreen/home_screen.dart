@@ -2,16 +2,33 @@ import 'package:flutter/material.dart';
 
 import 'package:food_app_3/HomeScreen/product_overview.dart';
 import 'package:food_app_3/HomeScreen/search.dart';
+import 'package:food_app_3/providers/product_provider.dart';
+import 'package:provider/provider.dart';
 
 import 'drawer_side.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late Productprovider productprovider;
+  @override
+  void initState() {
+    Productprovider productprovider = Provider.of(context, listen: false);
+    productprovider.fetchHerbsProduct();
+    productprovider.fetchfreshFruitData();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    productprovider = Provider.of(context);
     return Scaffold(
       backgroundColor: Colors.grey.shade400,
       appBar: AppBar(
@@ -28,8 +45,12 @@ class HomeScreen extends StatelessWidget {
                 color: Colors.black,
               ),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const Search()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Search(
+                              search: productprovider.getsearchAllproduct,
+                            )));
               },
             ),
           ),
@@ -76,9 +97,10 @@ class HomeScreen extends StatelessWidget {
                       Expanded(
                           flex: 2,
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.only(right: 180),
+                                padding: const EdgeInsets.only(left: 10),
                                 child: Container(
                                   height: 50,
                                   width: 70,
@@ -99,18 +121,29 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              Text(
-                                '30% off ',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 40,
-                                    color: Colors.green.shade100),
+                              const SizedBox(
+                                height: 5,
                               ),
-                              Text(
-                                'on All vegetables Products ',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green.shade100),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 50),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '30% off ',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 40,
+                                          color: Colors.green.shade100),
+                                    ),
+                                    Text(
+                                      'on All vegetables Products ',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.green.shade100),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           )),
@@ -119,114 +152,83 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const Doubletext(
+              Doubletext(
                 bigText: 'Herb seasonings',
+                onpressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Search(
+                          search: productprovider.getHerbsProductDataList)));
+                },
               ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: [
-                    ProductW(
-                      name: 'Fresh Basil',
-                      url: 'assets/images/image6.png',
-                      ontap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Productoverview(
-                                      productName: 'Fresh Basil',
-                                      productImage: 'assets/images/image6.png',
-                                    )));
-                      },
-                    ),
-                    ProductW(
-                      name: 'Fresh Mint',
-                      url: 'assets/images/image7.webp',
-                      ontap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Productoverview(
-                                    productName: 'Fresh Mint',
-                                    productImage:
-                                        'assets/images/image7.webp')));
-                      },
-                    ),
-                    ProductW(
-                      name: 'Green Garlic',
-                      url: 'assets/images/image8.jpg',
-                      ontap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Productoverview(
-                                      productName: 'Green Garlic',
-                                      productImage: 'assets/images/image8.jpg',
-                                    )));
-                      },
-                    ),
-                    ProductW(
-                      name: 'Bok Choy',
-                      url: 'assets/images/image9.jpg',
-                      ontap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Productoverview(
-                                      productName: 'Bok Choy',
-                                      productImage: 'assets/images/image9.jpg',
-                                    )));
-                      },
-                    ),
-                  ],
-                ),
+                    children: productprovider.getHerbsProductDataList
+                        .map((herbsProductData) {
+                  return ProductW(
+                    productPrice: herbsProductData.productPrice,
+                    name: herbsProductData.productName,
+                    url: herbsProductData.productImage,
+                    ontap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Productoverview(
+                                    productPrice: herbsProductData.productPrice,
+                                    productName: herbsProductData.productName,
+                                    productImage: herbsProductData.productImage,
+                                  )));
+                    },
+                  );
+                }).toList()),
               ),
-              const Doubletext(bigText: 'Fresh Fruit'),
+              Doubletext(
+                bigText: 'Fresh Fruit',
+                onpressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => Search(
+                          search: productprovider.getfreshFruitDataList)));
+                },
+              ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: [
-                    ProductW(
-                      url: 'assets/images/image5.jpg',
-                      name: 'Berrie',
-                      ontap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Productoverview(
-                                      productName: 'Berries',
-                                      productImage: 'assets/images/image5.jpg',
-                                    )));
-                      },
+                    children: productprovider.getfreshFruitDataList
+                        .map((fruitProductData) {
+                  return ProductW(
+                    productPrice: fruitProductData.productPrice,
+                    name: fruitProductData.productName,
+                    url: fruitProductData.productImage,
+                    ontap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Productoverview(
+                                    productPrice: fruitProductData.productPrice,
+                                    productName: fruitProductData.productName,
+                                    productImage: fruitProductData.productImage,
+                                  )));
+                    },
+                  );
+                }).toList()
+                    // children: [
+                    //   ProductW(
+                    //     productPrice: 1,
+                    //     url: 'assets/images/image5.jpg',
+                    //     name: 'Berrie',
+                    //     ontap: () {
+                    //       Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //               builder: (context) => Productoverview(
+                    //                     productPrice: 2,
+                    //                     productName: 'Berries',
+                    //                     productImage: 'assets/images/image5.jpg',
+                    //                   )));
+                    //     },
+                    //   ),
+                    // ],
                     ),
-                    ProductW(
-                      url: 'assets/images/image4.jpeg',
-                      name: 'Water melon',
-                      ontap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Productoverview(
-                                      productName: 'Water Melon',
-                                      productImage: 'assets/images/image4.jpeg',
-                                    )));
-                      },
-                    ),
-                    ProductW(
-                      url: 'assets/images/image3.jpg',
-                      name: 'Fresh Mango',
-                      ontap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Productoverview(
-                                      productName: 'Fresh Mango',
-                                      productImage: 'assets/images/image3.jpg',
-                                    )));
-                      },
-                    ),
-                  ],
-                ),
               )
             ],
           ),
@@ -238,9 +240,11 @@ class HomeScreen extends StatelessWidget {
 
 class Doubletext extends StatelessWidget {
   final String bigText;
+  final VoidCallback onpressed;
   const Doubletext({
     Key? key,
     required this.bigText,
+    required this.onpressed,
   }) : super(key: key);
 
   @override
@@ -252,12 +256,14 @@ class Doubletext extends StatelessWidget {
           bigText,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        TextButton(
-            onPressed: () {},
-            child: const Text(
-              'View all',
-              style: TextStyle(color: Colors.grey),
-            ))
+        Center(
+          child: TextButton(
+              onPressed: onpressed,
+              child: const Text(
+                'View all',
+                style: TextStyle(color: Colors.grey),
+              )),
+        )
       ],
     );
   }
@@ -269,10 +275,12 @@ class ProductW extends StatelessWidget {
     required this.url,
     required this.name,
     required this.ontap,
+    required this.productPrice,
   }) : super(key: key);
   final String url;
   final String name;
   final VoidCallback ontap;
+  final int productPrice;
 
   @override
   Widget build(BuildContext context) {
@@ -305,9 +313,9 @@ class ProductW extends StatelessWidget {
                 style: const TextStyle(
                     color: Colors.black, fontWeight: FontWeight.bold),
               ),
-              const Text(
-                '50\$/50 Gram',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                '$productPrice\$/50 Gram',
+                style: const TextStyle(color: Colors.grey),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
@@ -344,37 +352,7 @@ class ProductW extends StatelessWidget {
                     const SizedBox(
                       width: 5,
                     ),
-                    Expanded(
-                        child: Container(
-                      // ignore: sort_child_properties_last
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          Icon(
-                            Icons.remove,
-                            color: Colors.orange,
-                            size: 15,
-                          ),
-                          Text(
-                            '1',
-                            style: TextStyle(
-                                color: Colors.orange,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Icon(
-                            Icons.add,
-                            color: Colors.orange,
-                            size: 15,
-                          ),
-                        ],
-                      ),
-                      height: 30,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    )),
+                    Expanded(child: Counter()),
                   ],
                 ),
               )
@@ -383,5 +361,84 @@ class ProductW extends StatelessWidget {
         ]),
       ),
     );
+  }
+}
+
+class Counter extends StatefulWidget {
+  const Counter({
+    super.key,
+  });
+
+  @override
+  State<Counter> createState() => _CounterState();
+}
+
+class _CounterState extends State<Counter> {
+  int count = 1;
+  bool isTrue = false;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 30,
+        width: 50,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: isTrue == true
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  InkWell(
+                    onTap: () {
+                      if (count == 1) {
+                        setState(() {
+                          isTrue = false;
+                        });
+                      }
+                      if (count < 1) {
+                        setState(() {
+                          count--;
+                        });
+                      }
+                    },
+                    child: Icon(
+                      Icons.remove,
+                      color: Colors.orange,
+                      size: 15,
+                    ),
+                  ),
+                  Text(
+                    '$count',
+                    style: TextStyle(
+                        color: Colors.orange, fontWeight: FontWeight.bold),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        count++;
+                      });
+                    },
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.orange,
+                      size: 15,
+                    ),
+                  ),
+                ],
+              )
+            : Center(
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      isTrue = true;
+                    });
+                  },
+                  child: Text(
+                    'Add',
+                    style: TextStyle(color: Colors.orange),
+                  ),
+                ),
+              ));
   }
 }

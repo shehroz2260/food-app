@@ -2,7 +2,15 @@ import 'package:flutter/material.dart';
 
 class Singleitem extends StatelessWidget {
   bool isbool = false;
-  Singleitem({super.key, required this.isbool});
+  String? productImage;
+  String? productName;
+  int? productPrice;
+  Singleitem(
+      {super.key,
+      required this.isbool,
+      this.productImage,
+      this.productName,
+      this.productPrice});
 
   @override
   Widget build(BuildContext context) {
@@ -13,15 +21,15 @@ class Singleitem extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                  child: Container(
+                  child: SizedBox(
                 height: 100,
-                child: const Center(
+                child: Center(
                     child: Image(
-                  image: AssetImage('assets/images/image6.png'),
+                  image: AssetImage(productImage ?? ''),
                 )),
               )),
               Expanded(
-                  child: Container(
+                  child: SizedBox(
                 height: 100,
                 child: Column(
                     mainAxisAlignment: isbool == false
@@ -29,14 +37,14 @@ class Singleitem extends StatelessWidget {
                         : MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'ProductName',
-                        style: TextStyle(
+                      Text(
+                        productName ?? '',
+                        style: const TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),
-                      const Text(
-                        '50\$/50 Gram',
-                        style: TextStyle(
+                      Text(
+                        '$productPrice\$/50 Gram',
+                        style: const TextStyle(
                             color: Colors.grey, fontWeight: FontWeight.bold),
                       ),
                       isbool == false
@@ -92,7 +100,7 @@ class Singleitem extends StatelessWidget {
                                       color: Colors.orange,
                                     ),
                                     Text(
-                                      'ADD',
+                                      'Add',
                                       style: TextStyle(color: Colors.orange),
                                     )
                                   ],

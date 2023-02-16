@@ -4,6 +4,9 @@ import 'package:flutter_signin_button/button_view.dart';
 import 'package:food_app_3/HomeScreen/home_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/users_provider.dart';
 
 class SigninAuth extends StatefulWidget {
   const SigninAuth({super.key});
@@ -13,10 +16,11 @@ class SigninAuth extends StatefulWidget {
 }
 
 class _SigninAuthState extends State<SigninAuth> {
-  get userProvider => null;
+  // get userProvider => null;
 
   @override
   Widget build(BuildContext context) {
+    userProvider = Provider.of<UserProvider>(context);
     return SafeArea(
         child: Scaffold(
       body: Container(
@@ -91,20 +95,32 @@ class _SigninAuthState extends State<SigninAuth> {
     ));
   }
 
+  UserProvider? userProvider;
+
   Future<void> signup(BuildContext context) async {
     try {
+      final FirebaseAuth _auth = FirebaseAuth.instance;
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
             await googleSignInAccount.authentication;
-        GoogleAuthProvider.credential(
+        final AuthCredential credential = GoogleAuthProvider.credential(
             idToken: googleSignInAuthentication.idToken,
             accessToken: googleSignInAuthentication.accessToken);
+
+        final User? user = (await _auth.signInWithCredential(credential)).user;
+        // print("signed in " + user.displayName);
+        userProvider!.addUsersdata(
+          currentUser: user!,
+          userEmail: user.email.toString(),
+          userImage: user.photoURL.toString(),
+          userName: user.displayName.toString(),
+        );
+
+        //     return user;
         // ignore: use_build_context_synchronously
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
 
         // Getting users credential
 
@@ -118,4 +134,36 @@ class _SigninAuthState extends State<SigninAuth> {
       print(e);
     }
   }
+
+  // Future<User?> signup(context) async {
+  //   try {
+  //     final GoogleSignIn _googleSignIn = GoogleSignIn(
+  //       scopes: ['email'],
+  //     );
+  //     final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  //     final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+  //     final GoogleSignInAuthentication googleAuth =
+  //         await googleUser!.authentication;
+
+  //     final AuthCredential credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth.accessToken,
+  //       idToken: googleAuth.idToken,
+  //     );
+
+  //     final User? user = (await _auth.signInWithCredential(credential)).user;
+  //     // print("signed in " + user.displayName);
+  //     userProvider.addUsersdata(
+  //       currentUser: user,
+  //       userEmail: 'jkehw',
+  //       userImage: 'jhedhjeh',
+  //       userName: 'jafhlafj',
+
+  //     );
+
+  //     return user;
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 }

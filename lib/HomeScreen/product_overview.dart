@@ -5,10 +5,12 @@ enum SigninCharacter { fill, outline }
 class Productoverview extends StatefulWidget {
   final String productName;
   final String productImage;
+  final int productPrice;
   const Productoverview({
     super.key,
     required this.productName,
     required this.productImage,
+    required this.productPrice,
   });
 
   @override
@@ -127,7 +129,7 @@ class _ProductoverviewState extends State<Productoverview> {
                             ),
                           ],
                         ),
-                        const Text('\$50'),
+                        Text('\$${widget.productPrice}'),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 10),
