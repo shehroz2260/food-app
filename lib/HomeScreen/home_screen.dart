@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:food_app_3/HomeScreen/product_overview.dart';
 import 'package:food_app_3/HomeScreen/search.dart';
 import 'package:food_app_3/providers/product_provider.dart';
+import 'package:food_app_3/providers/reiew_cart_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'drawer_side.dart';
@@ -352,7 +353,10 @@ class ProductW extends StatelessWidget {
                     const SizedBox(
                       width: 5,
                     ),
-                    Expanded(child: Counter()),
+                     Expanded(child: Counter(
+                      productId: ,
+
+                     )),
                   ],
                 ),
               )
@@ -365,8 +369,13 @@ class ProductW extends StatelessWidget {
 }
 
 class Counter extends StatefulWidget {
-  const Counter({
-    super.key,
+  String? productId;
+  String? productName;
+  String? productImage;
+  String? productQuantity;
+  int? productPrice;
+   Counter({
+    super.key,this.productId,this.productName,this.productImage,this.productQuantity,this.productPrice
   });
 
   @override
@@ -378,6 +387,8 @@ class _CounterState extends State<Counter> {
   bool isTrue = false;
   @override
   Widget build(BuildContext context) {
+    ReviewCartProvider reviewCartProvider =
+        Provider.of<ReviewCartProvider>(context);
     return Container(
         height: 30,
         width: 50,
@@ -396,13 +407,13 @@ class _CounterState extends State<Counter> {
                           isTrue = false;
                         });
                       }
-                      if (count < 1) {
+                      if (count > 1) {
                         setState(() {
                           count--;
                         });
                       }
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.remove,
                       color: Colors.orange,
                       size: 15,
@@ -410,7 +421,7 @@ class _CounterState extends State<Counter> {
                   ),
                   Text(
                     '$count',
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.orange, fontWeight: FontWeight.bold),
                   ),
                   InkWell(
@@ -419,7 +430,7 @@ class _CounterState extends State<Counter> {
                         count++;
                       });
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.add,
                       color: Colors.orange,
                       size: 15,
@@ -434,7 +445,7 @@ class _CounterState extends State<Counter> {
                       isTrue = true;
                     });
                   },
-                  child: Text(
+                  child: const Text(
                     'Add',
                     style: TextStyle(color: Colors.orange),
                   ),
